@@ -6,7 +6,7 @@
  */
 
 #import "ARTNode.h"
-
+#import "RCTConvert+ART.h"
 #import "ARTContainer.h"
 
 @implementation ARTNode
@@ -43,7 +43,6 @@
 
 - (void)setShadow:(ARTShadow)shadow
 {
-  shadow.color = nil;
   [self invalidate];
   _shadow = shadow;
 }
@@ -80,7 +79,10 @@
   CGContextSaveGState(context);
   CGContextConcatCTM(context, self.transform);
   CGContextSetAlpha(context, self.opacity);
-  CGContextSetShadowWithColor(context, self.shadow.offset, self.shadow.blur, [UIColor.blackColor colorWithAlphaComponent:.1].CGColor);
+  CGContextSetShadowWithColor(context, self.shadow.offset, self.shadow.blur, self.shadow.color.CGColor);
+  UIColor *color = [UIColor colorWithCGColor:[RCTConvert CGColor:@(self.shadow.color)]];
+  color = [color colorWithAlphaComponent:self.shadow.alpha];
+  CGContextSetShadowWithColor(context, self.shadow.offset, self.shadow.blur, color.CGColor);
 }
 
 - (void)renderLayerTo:(CGContextRef)context
